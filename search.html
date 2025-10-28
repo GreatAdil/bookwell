@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="brand-text">Bookwell</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="new-releases.html">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="best-sellers.html">Best Sellers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offers.html">Offers</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link text-dark me-3" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="favourites.html" class="btn btn-link text-dark me-3 position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger" id="favCount">0</span>
+                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <button class="btn btn-link text-dark dropdown-toggle" type="button" data-mdb-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                            <li><a class="dropdown-item" href="library.html">My Library</a></li>
+                            <li><a class="dropdown-item" href="orders.html">Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn" onclick="if(confirm('Are you sure you want to logout?')) { logout(); } return false;">Logout</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary btn-rounded ms-2" id="authBtn" onclick="window.location.href='login.html'">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <section class="py-5 mt-5">
+        <div class="container">
+            <div class="mb-4">
+                <h1 class="section-title">Search Results</h1>
+                <p class="text-muted" id="searchQuery">Searching...</p>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search eBooks...">
+                        <button class="btn btn-primary" type="button" onclick="performSearch()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results -->
+            <div class="row g-4" id="searchResults">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-0">© 2024 Bookwell. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="categories.html" class="nav-item"><i class="fas fa-th-large"></i><span>Categories</span></a>
+        <a href="favourites.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let currentQuery = '';
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentQuery = urlParams.get('q') || '';
+            
+            if (currentQuery) {
+                document.getElementById('searchInput').value = currentQuery;
+                await performSearchFromURL();
+            }
+            
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+        });
+        
+        async function performSearchFromURL() {
+            const container = document.getElementById('searchResults');
+            document.getElementById('searchQuery').textContent = `Results for "${currentQuery}"`;
+            
+            try {
+                const books = await searchBooks(currentQuery);
+                
+                if (books.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                            <h4>No results found</h4>
+                            <p class="text-muted">Try different keywords or browse our categories</p>
+                            <button class="btn btn-primary btn-rounded" onclick="window.location.href='categories.html'">
+                                Browse All Books
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = books.map(book => createBookCard(book)).join('');
+                setupFavouriteButtons();
+            } catch (error) {
+                console.error('Error searching:', error);
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <p class="text-danger">Search failed. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+    </script>
+</body>
+</html>

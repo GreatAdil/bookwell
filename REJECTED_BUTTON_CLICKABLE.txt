@@ -1,0 +1,354 @@
+╔══════════════════════════════════════════════════════════════╗
+║      REJECTED BUTTON - CLICKABLE TO APPROVE ✅               ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 NEW FEATURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ "Rejected" is now a BUTTON (not badge)
+✅ Admin can click to re-approve
+✅ Red button with icon
+✅ Tooltip: "Click to Approve"
+✅ One-click re-approval
+
+
+📊 ACTIONS COLUMN - ALL STATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pending Order:
+┌─────────────────────────────────┐
+│ Actions                         │
+├─────────────────────────────────┤
+│ [🕐 Pending ▼]                  │
+│  (Yellow Dropdown)              │
+│  Click → Approve/Reject         │
+└─────────────────────────────────┘
+
+Approved Order:
+┌─────────────────────────────────┐
+│ Actions                         │
+├─────────────────────────────────┤
+│ ✓ Approved                      │
+│ (Green Badge - Not Clickable)   │
+└─────────────────────────────────┘
+
+Rejected Order (NEW):
+┌─────────────────────────────────┐
+│ Actions                         │
+├─────────────────────────────────┤
+│ [✖ Rejected]                    │
+│ (Red Button - CLICKABLE)        │
+│ Click → Re-approve              │
+└─────────────────────────────────┘
+
+
+🔄 REJECTED ORDER WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Order is Rejected
+┌─────────────────────────────────┐
+│ Admin Panel → Orders            │
+│                                 │
+│ Order: Rich Dad Poor Dad        │
+│ Status: Rejected                │
+│ Actions: [✖ Rejected]           │
+│          (Red Button)           │
+└─────────────────────────────────┘
+
+Step 2: Admin Clicks "Rejected" Button
+┌─────────────────────────────────┐
+│ Confirmation Dialog:            │
+│                                 │
+│ "Approve this order?            │
+│  User will get access to        │
+│  download the book."            │
+│                                 │
+│ [Cancel] [OK]                   │
+└─────────────────────────────────┘
+
+Step 3: Admin Confirms
+┌─────────────────────────────────┐
+│ Processing...                   │
+│ - Update status to 'approved'   │
+│ - Create purchase record        │
+│ - Save approval timestamp       │
+│ - Realtime update               │
+└─────────────────────────────────┘
+
+Step 4: Success - Realtime Update
+┌─────────────────────────────────┐
+│ Success Message:                │
+│ "Order approved!"               │
+│                                 │
+│ Actions: ✓ Approved             │
+│ (Green Badge)                   │
+└─────────────────────────────────┘
+
+Step 5: User Gets Access
+┌─────────────────────────────────┐
+│ User Panel → Library            │
+│                                 │
+│ Book appears in library         │
+│ [Download Book] enabled         │
+└─────────────────────────────────┘
+
+
+💻 CODE IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Rejected Button HTML:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Rejected orders - Clickable button
+: `<button class="btn btn-danger btn-sm" 
+          onclick="approveOrder('${order.id}')" 
+          title="Click to Approve">
+       <i class="fas fa-times-circle me-1"></i>Rejected
+   </button>`;
+
+
+Complete Action Buttons Logic:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const actionButtons = currentStatus === 'pending'
+    // Pending - Dropdown with Approve/Reject
+    ? `<div class="dropdown">
+           <button class="btn btn-warning btn-sm dropdown-toggle" 
+                   type="button" 
+                   id="dropdown_${order.id}" 
+                   data-mdb-toggle="dropdown">
+               <i class="fas fa-clock me-1"></i>Pending
+           </button>
+           <ul class="dropdown-menu">
+               <li><a class="dropdown-item text-success" 
+                      onclick="approveOrder('${order.id}')">
+                   <i class="fas fa-check me-2"></i>Approve
+               </a></li>
+               <li><a class="dropdown-item text-danger" 
+                      onclick="rejectOrder('${order.id}')">
+                   <i class="fas fa-times me-2"></i>Reject
+               </a></li>
+           </ul>
+       </div>`
+    
+    // Approved - Non-clickable badge
+    : currentStatus === 'approved'
+    ? `<span class="badge badge-success">
+           <i class="fas fa-check-circle me-1"></i>Approved
+       </span>`
+    
+    // Rejected - Clickable button to re-approve
+    : `<button class="btn btn-danger btn-sm" 
+              onclick="approveOrder('${order.id}')" 
+              title="Click to Approve">
+           <i class="fas fa-times-circle me-1"></i>Rejected
+       </button>`;
+
+
+🎨 UI DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Rejected Button Design:
+┌─────────────────────────────────┐
+│ [✖ Rejected]                    │
+│                                 │
+│ Color: Red (btn-danger)         │
+│ Size: Small (btn-sm)            │
+│ Icon: ✖ (times-circle)          │
+│ Cursor: Pointer (clickable)     │
+│ Tooltip: "Click to Approve"     │
+└─────────────────────────────────┘
+
+Hover Effect:
+┌─────────────────────────────────┐
+│ [✖ Rejected]                    │
+│ (Darker red on hover)           │
+│ Tooltip appears                 │
+└─────────────────────────────────┘
+
+After Click:
+┌─────────────────────────────────┐
+│ ✓ Approved                      │
+│ (Green Badge)                   │
+└─────────────────────────────────┘
+
+
+📋 ADMIN TABLE VIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Rejected Order:
+┌────────┬──────┬──────────┬────────┬──────────┬─────────┬──────────┬─────────────┐
+│Order ID│ User │Book Title│ Amount │Trans ID  │Payment  │   Date   │   Actions   │
+├────────┼──────┼──────────┼────────┼──────────┼─────────┼──────────┼─────────────┤
+│ABC1234 │ john │Atomic    │ ₹45.00 │T123456...│ Paid ✅ │20 Oct 25 │[✖ Rejected] │
+│        │      │          │        │          │         │          │  (Clickable)│
+└────────┴──────┴──────────┴────────┴──────────┴─────────┴──────────┴─────────────┘
+
+Admin Clicks "Rejected" Button:
+┌────────┬──────┬──────────┬────────┬──────────┬─────────┬──────────┬─────────────┐
+│Order ID│ User │Book Title│ Amount │Trans ID  │Payment  │   Date   │   Actions   │
+├────────┼──────┼──────────┼────────┼──────────┼─────────┼──────────┼─────────────┤
+│ABC1234 │ john │Atomic    │ ₹45.00 │T123456...│ Paid ✅ │20 Oct 25 │✓ Approved   │
+│        │      │          │        │          │         │          │  (Badge)    │
+└────────┴──────┴──────────┴────────┴──────────┴─────────┴──────────┴─────────────┘
+
+
+✨ FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Clickable Rejected Button:
+✅ Red button (not badge)
+✅ Click to re-approve
+✅ Tooltip on hover
+✅ Icon + Text
+✅ Professional look
+
+Re-approval Process:
+✅ One-click approval
+✅ Confirmation dialog
+✅ Realtime update
+✅ Creates purchase record
+✅ User gets access
+
+Admin Control:
+✅ Can reverse rejection
+✅ No need to contact support
+✅ Instant action
+✅ Full control
+
+
+🧪 TESTING GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test 1: Reject Order First
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Find pending order
+2. Click "Pending" dropdown
+3. Select "Reject"
+4. Confirm rejection
+5. Button shows: [✖ Rejected] (Red)
+
+Expected: ✅ Order rejected, red button shows
+
+
+Test 2: Click Rejected Button
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Find rejected order
+2. See red "Rejected" button
+3. Hover over button
+4. Tooltip appears: "Click to Approve"
+5. Click button
+6. Confirmation dialog appears
+
+Expected: ✅ Button is clickable, dialog shows
+
+
+Test 3: Re-approve Order
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Click "Rejected" button
+2. Confirmation: "Approve this order?"
+3. Click "OK"
+4. Success message shows
+5. Button changes to: ✓ Approved (Green)
+6. Realtime update - no refresh
+
+Expected: ✅ Order re-approved, badge updates
+
+
+Test 4: User Gets Access
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. After re-approval
+2. User logs in
+3. Goes to Library
+4. Book appears
+5. Download button enabled
+
+Expected: ✅ User can access book
+
+
+Test 5: Multiple Rejected Orders
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Multiple rejected orders
+2. Click first "Rejected" button
+3. Approve first order
+4. Click second "Rejected" button
+5. Approve second order
+6. Each updates independently
+
+Expected: ✅ Each order updates separately
+
+
+📊 COMPARISON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BEFORE (Badge):
+┌─────────────────────────────────┐
+│ ✖ Rejected                      │
+│ (Red Badge - Not Clickable)     │
+│ Admin cannot re-approve         │
+└─────────────────────────────────┘
+
+AFTER (Button):
+┌─────────────────────────────────┐
+│ [✖ Rejected]                    │
+│ (Red Button - CLICKABLE)        │
+│ Click → Re-approve              │
+│ Tooltip: "Click to Approve"     │
+└─────────────────────────────────┘
+
+
+🎯 USE CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use Case 1: Accidental Rejection
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Problem: Admin accidentally rejected order
+Solution: Click "Rejected" button to re-approve
+Result: Order approved, user gets access
+
+
+Use Case 2: Payment Verification
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Problem: Initially rejected due to payment issue
+Solution: After payment verified, click "Rejected" to approve
+Result: User gets access after verification
+
+
+Use Case 3: Policy Change
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Problem: Order rejected due to old policy
+Solution: Policy changed, click "Rejected" to approve
+Result: Order approved under new policy
+
+
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Feature: Clickable Rejected Button
+File: admin/orders.html
+Location: Actions Column
+
+Change:
+❌ Before: Badge (not clickable)
+✅ After: Button (clickable)
+
+Functionality:
+✅ Click "Rejected" button
+✅ Confirmation dialog
+✅ Re-approve order
+✅ Realtime update
+✅ User gets access
+
+Benefits:
+✅ Admin can reverse rejection
+✅ No support needed
+✅ One-click re-approval
+✅ Full control
+✅ Professional UI
+
+States:
+1. Pending → Dropdown (Approve/Reject)
+2. Approved → Badge (Not clickable)
+3. Rejected → Button (Clickable to re-approve)
+
+PERFECT! 🎉

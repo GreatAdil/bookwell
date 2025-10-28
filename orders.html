@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="brand-text">Bookwell</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="new-releases.html">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="best-sellers.html">Best Sellers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offers.html">Offers</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link text-dark me-3" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="favourites.html" class="btn btn-link text-dark me-3 position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger" id="favCount">0</span>
+                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <button class="btn btn-link text-dark dropdown-toggle" type="button" data-mdb-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                            <li><a class="dropdown-item" href="library.html">My Library</a></li>
+                            <li><a class="dropdown-item" href="orders.html">Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn" onclick="if(confirm('Are you sure you want to logout?')) { logout(); } return false;">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Orders Section -->
+    <section class="py-5 mt-5">
+        <div class="container">
+            <h1 class="section-title mb-4">Order History</h1>
+            
+            <!-- Order Summary -->
+            <div id="orderSummary" class="row mb-4" style="display: none;">
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                            <h3 class="mb-0" id="totalOrders">0</h3>
+                            <p class="text-muted mb-0">Total Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h3 class="mb-0" id="purchasedOrders">0</h3>
+                            <p class="text-muted mb-0">Purchased</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h3 class="mb-0" id="pendingOrders">0</h3>
+                            <p class="text-muted mb-0">Pending</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ordersContainer">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <p class="mb-0">© 2024 Bookwell. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="categories.html" class="nav-item"><i class="fas fa-th-large"></i><span>Categories</span></a>
+        <a href="favourites.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await requireAuth();
+            if (!user) return;
+            
+            await loadOrders();
+        });
+        
+        // Check all orders in database (for debugging)
+        async function checkAllOrders() {
+            try {
+                console.log('=== CHECKING ALL ORDERS IN DATABASE ===');
+                const user = auth.currentUser;
+                console.log('Current user:', user.uid, user.email);
+                
+                // Get ALL orders
+                const allOrdersSnapshot = await db.collection('orders').get();
+                console.log('Total orders in database:', allOrdersSnapshot.size);
+                
+                allOrdersSnapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    console.log('Order:', doc.id, {
+                        userId: data.userId,
+                        userEmail: data.userEmail,
+                        bookTitle: data.bookTitle,
+                        status: data.status,
+                        amount: data.amount
+                    });
+                });
+                
+                // Get user's orders
+                const userOrdersSnapshot = await db.collection('orders')
+                    .where('userId', '==', user.uid)
+                    .get();
+                console.log('User orders:', userOrdersSnapshot.size);
+                
+                showToast(`Total: ${allOrdersSnapshot.size}, Your orders: ${userOrdersSnapshot.size}`);
+            } catch (error) {
+                console.error('Error checking orders:', error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+        
+        // Create test order for debugging
+        async function createTestOrder() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast('Please login first', 'error');
+                    return;
+                }
+                
+                console.log('Creating test order...');
+                showLoading();
+                
+                const testOrder = {
+                    userId: user.uid,
+                    userName: user.displayName || 'Test User',
+                    userEmail: user.email,
+                    phone: '1234567890',
+                    bookId: 'test-book-' + Date.now(),
+                    bookTitle: 'Test Book - ' + new Date().toLocaleString(),
+                    amount: 99.99,
+                    paymentId: 'TEST_' + Date.now(),
+                    status: 'approved', // Change to 'pending' or 'approved' for testing
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    approvedBy: 'admin@bookwell.com'
+                };
+                
+                await db.collection('orders').add(testOrder);
+                
+                hideLoading();
+                showToast('Test order created successfully!');
+                console.log('Test order created');
+                
+                // Reload orders
+                await loadOrders();
+            } catch (error) {
+                hideLoading();
+                console.error('Error creating test order:', error);
+                showToast('Failed to create test order: ' + error.message, 'error');
+            }
+        }
+        
+        async function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            
+            try {
+                console.log('Loading user orders...');
+                const orders = await getUserOrders();
+                console.log('Orders fetched:', orders.length);
+                console.log('Orders data:', orders);
+                
+                if (orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-receipt fa-4x text-muted mb-3"></i>
+                            <h4>No orders yet</h4>
+                            <p class="text-muted mb-4">Start shopping to see your orders here!</p>
+                            <button class="btn btn-primary btn-rounded" onclick="window.location.href='categories.html'">
+                                Browse eBooks
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Calculate statistics
+                const totalOrders = orders.length;
+                const purchasedOrders = orders.filter(o => o.status === 'approved').length;
+                const pendingOrders = orders.filter(o => o.status === 'pending').length;
+                
+                // Show summary
+                document.getElementById('orderSummary').style.display = 'flex';
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('purchasedOrders').textContent = purchasedOrders;
+                document.getElementById('pendingOrders').textContent = pendingOrders;
+                
+                container.innerHTML = orders.map(order => {
+                    // Determine status badge
+                    let statusBadge = '';
+                    let actionButton = '';
+                    
+                    if (order.status === 'approved') {
+                        statusBadge = '<span class="badge bg-success rounded-pill"><i class="fas fa-check-circle me-1"></i>Purchased</span>';
+                        actionButton = `<button class="btn btn-success btn-sm btn-rounded" onclick="window.location.href='library.html'">
+                                           <i class="fas fa-book me-2"></i>View in Library
+                                       </button>`;
+                    } else if (order.status === 'pending') {
+                        statusBadge = '<span class="badge bg-warning rounded-pill"><i class="fas fa-clock me-1"></i>Pending Approval</span>';
+                        actionButton = `<button class="btn btn-warning btn-sm btn-rounded" disabled>
+                                           <i class="fas fa-hourglass-half me-2"></i>Awaiting Approval
+                                       </button>`;
+                    } else if (order.status === 'rejected') {
+                        statusBadge = '<span class="badge bg-danger rounded-pill"><i class="fas fa-times-circle me-1"></i>Rejected</span>';
+                        actionButton = `<button class="btn btn-secondary btn-sm btn-rounded" onclick="window.location.href='contact.html'">
+                                           <i class="fas fa-headset me-2"></i>Contact Support
+                                       </button>`;
+                    }
+                    
+                    return `
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <h5 class="mb-0 me-3">${order.bookTitle}</h5>
+                                            ${statusBadge}
+                                        </div>
+                                        <p class="text-muted mb-2 small">
+                                            <i class="fas fa-hashtag"></i> <strong>Order ID:</strong> <code>${order.id.substring(0, 12)}...</code><br>
+                                            <i class="fas fa-credit-card"></i> <strong>Payment ID:</strong> <code>${order.paymentId || 'N/A'}</code><br>
+                                            <i class="fas fa-calendar"></i> <strong>Order Date:</strong> ${formatDate(order.createdAt)}<br>
+                                            ${order.approvedAt ? `<i class="fas fa-check"></i> <strong>Approved:</strong> ${formatDate(order.approvedAt)}<br>` : ''}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-md-end">
+                                        <h4 class="text-success mb-3">${formatCurrency(order.amount)}</h4>
+                                        ${actionButton}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                container.innerHTML = `
+                    <div class="text-center">
+                        <p class="text-danger">Failed to load orders. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

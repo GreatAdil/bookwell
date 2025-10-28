@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Sellers - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="brand-text">Bookwell</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="new-releases.html">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="best-sellers.html">Best Sellers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offers.html">Offers</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link text-dark me-3" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="favourites.html" class="btn btn-link text-dark me-3 position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger" id="favCount">0</span>
+                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <button class="btn btn-link text-dark dropdown-toggle" type="button" data-mdb-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                            <li><a class="dropdown-item" href="library.html">My Library</a></li>
+                            <li><a class="dropdown-item" href="orders.html">Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn" onclick="if(confirm('Are you sure you want to logout?')) { logout(); } return false;">Logout</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary btn-rounded ms-2" id="authBtn" onclick="window.location.href='login.html'">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="py-5 mt-5">
+        <div class="container">
+            <h1 class="section-title">Best Sellers</h1>
+            <p class="text-muted">Most popular eBooks in our collection</p>
+        </div>
+    </section>
+
+    <!-- Books Grid -->
+    <section class="pb-5">
+        <div class="container">
+            <div class="row g-4" id="booksGrid">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3"><i class="fas fa-book-open me-2"></i>Bookwell</h5>
+                    <p>Your trusted platform for affordable eBooks.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/bookwellofficial/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/bookwellofficial/" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="categories.html">Categories</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">© 2024 Bookwell. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="categories.html" class="nav-item active"><i class="fas fa-th-large"></i><span>Categories</span></a>
+        <a href="favourites.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadBestSellers();
+        });
+        
+        async function loadBestSellers() {
+            const grid = document.getElementById('booksGrid');
+            try {
+                console.log('Loading best sellers...');
+                let snapshot;
+                
+                // Try with orderBy first, fallback if index doesn't exist
+                try {
+                    snapshot = await db.collection('ebooks')
+                        .where('status', '==', 'active')
+                        .orderBy('rating', 'desc')
+                        .limit(20)
+                        .get();
+                } catch (indexError) {
+                    console.log('Using fallback query (no index)');
+                    // Fallback: get all active books and sort in memory
+                    snapshot = await db.collection('ebooks')
+                        .where('status', '==', 'active')
+                        .get();
+                }
+                
+                let books = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Sort by rating in memory if fallback was used
+                books.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                books = books.slice(0, 20); // Limit to 20
+                
+                console.log('Best sellers loaded:', books.length);
+                
+                if (books.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-star fa-4x text-muted mb-3"></i>
+                            <h4>No Best Sellers Yet</h4>
+                            <p class="text-muted">Check back soon for top-rated books!</p>
+                            <a href="categories.html" class="btn btn-primary btn-rounded mt-3">
+                                Browse All Books
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                grid.innerHTML = books.map(book => createBookCard(book)).join('');
+                setupFavouriteButtons();
+            } catch (error) {
+                console.error('Error loading books:', error);
+                grid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <h4>Failed to Load Books</h4>
+                        <p class="text-muted">${error.message}</p>
+                        <button class="btn btn-primary btn-rounded mt-3" onclick="loadBestSellers()">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

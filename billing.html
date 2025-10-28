@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Details - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <button class="btn btn-link text-dark mb-4" onclick="history.back()">
+                    <i class="fas fa-arrow-left me-2"></i>Back
+                </button>
+                
+                <h2 class="mb-4">Billing Details</h2>
+                
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Contact Information</h5>
+                                <form id="billingForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="fullName" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Phone Number *</label>
+                                        <input type="tel" class="form-control" id="phone" required>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary btn-lg btn-rounded w-100">
+                                        Proceed to Payment
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Order Summary</h5>
+                                <div id="orderSummary">
+                                    <p class="text-muted">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let currentBook = null;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is logged in
+            const user = await requireAuth();
+            if (!user) return;
+            
+            // Load book from localStorage
+            const bookData = localStorage.getItem('checkoutBook');
+            if (!bookData) {
+                window.location.href = 'categories.html';
+                return;
+            }
+            
+            currentBook = JSON.parse(bookData);
+            displayOrderSummary();
+            
+            // Pre-fill user data
+            document.getElementById('fullName').value = user.displayName || '';
+            document.getElementById('email').value = user.email || '';
+            
+            // Setup form
+            document.getElementById('billingForm').addEventListener('submit', handleBillingSubmit);
+        });
+        
+        function displayOrderSummary() {
+            const container = document.getElementById('orderSummary');
+            const tax = currentBook.price * 0.18; // 18% tax
+            const total = currentBook.price + tax;
+            
+            container.innerHTML = `
+                <div class="mb-3">
+                    <img src="${currentBook.imageUrl}" alt="${currentBook.title}" 
+                         class="img-fluid rounded mb-3" style="max-height: 200px;">
+                    <h6>${currentBook.title}</h6>
+                    <p class="text-muted small">${currentBook.author}</p>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Price:</span>
+                    <span>${formatCurrency(currentBook.price)}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Platform Fee (18%):</span>
+                    <span>${formatCurrency(tax)}</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-0">
+                    <strong>Total:</strong>
+                    <strong class="text-success">${formatCurrency(total)}</strong>
+                </div>
+            `;
+        }
+        
+        function handleBillingSubmit(e) {
+            e.preventDefault();
+            
+            const billingData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                book: currentBook
+            };
+            
+            localStorage.setItem('billingData', JSON.stringify(billingData));
+            window.location.href = 'payment.html';
+        }
+    </script>
+</body>
+</html>

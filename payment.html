@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Complete Payment</h2>
+                        
+                        <div id="orderSummary" class="mb-4">
+                            <!-- Order summary will be loaded here -->
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-4">Payment Method - UPI Only</h5>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>UPI Payment</strong> - Fast, secure, and instant!
+                        </div>
+                        
+                        <!-- UPI Payment Form -->
+                        <div id="upiPaymentForm">
+                            <div class="mb-4">
+                                <label class="form-label">Enter UPI ID (Optional)</label>
+                                <input type="text" class="form-control" id="upiId" placeholder="yourname@paytm / yourname@gpay">
+                                <small class="text-muted">Example: 9876543210@paytm, username@gpay, username@phonepe</small>
+                            </div>
+                            
+                            <div class="card bg-light mb-4">
+                                <div class="card-body">
+                                    <h6 class="mb-3 text-center"><i class="fas fa-mobile-alt me-2"></i>UPI Payment</h6>
+                                    
+                                    <!-- UPI ID Display -->
+                                    <div class="alert alert-success mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-muted d-block">Pay to UPI ID:</small>
+                                                <strong id="upiIdDisplay">821827473@ybl</strong>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-success" onclick="copyUpiId()">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Amount Display -->
+                                    <div class="text-center mb-3">
+                                        <p class="text-muted small mb-1">Amount to Pay:</p>
+                                        <h3 class="text-success mb-0" id="paymentAmount">₹0.00</h3>
+                                    </div>
+                                    
+                                    <!-- Transaction ID Input -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Transaction ID / UTR Number *</label>
+                                        <input type="text" class="form-control" id="transactionId" 
+                                               placeholder="Enter 12-digit transaction ID" 
+                                               required maxlength="20">
+                                        <small class="text-muted">Enter the transaction ID after completing payment</small>
+                                    </div>
+                                    
+                                    <p class="small text-muted text-center mb-0">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Complete payment via any UPI app and enter transaction ID above
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-3">
+                                <p class="text-muted mb-2">Pay using popular UPI apps:</p>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="openUpiApp('gpay')">
+                                        <i class="fab fa-google-pay"></i> GPay
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="openUpiApp('phonepe')">
+                                        <i class="fas fa-mobile-alt"></i> PhonePe
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="openUpiApp('paytm')">
+                                        <i class="fas fa-wallet"></i> Paytm
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="openUpiApp('upi')">
+                                        <i class="fas fa-qrcode"></i> Other UPI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-lg btn-rounded w-100" id="payNowBtn">
+                            <i class="fas fa-lock me-2"></i>Pay Now
+                        </button>
+                        
+                        <p class="text-center text-muted mt-3 small">
+                            <i class="fas fa-shield-alt me-1"></i>Your payment is secure and encrypted
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let billingData = null;
+        let totalAmount = 0;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is logged in
+            const user = await requireAuth();
+            if (!user) return;
+            
+            // Load billing data
+            const billingDataStr = localStorage.getItem('billingData');
+            if (!billingDataStr) {
+                window.location.href = 'categories.html';
+                return;
+            }
+            
+            billingData = JSON.parse(billingDataStr);
+            displayOrderSummary();
+            
+            // Setup payment button
+            document.getElementById('payNowBtn').addEventListener('click', processPayment);
+        });
+        
+        function displayOrderSummary() {
+            const container = document.getElementById('orderSummary');
+            const book = billingData.book;
+            const tax = book.price * 0.18;
+            totalAmount = book.price + tax;
+            
+            container.innerHTML = `
+                <div class="d-flex align-items-center mb-3">
+                    <img src="${book.imageUrl}" alt="${book.title}" 
+                         class="rounded me-3" style="width: 80px; height: 120px; object-fit: cover;">
+                    <div>
+                        <h6 class="mb-1">${book.title}</h6>
+                        <p class="text-muted small mb-0">${book.author}</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${formatCurrency(book.price)}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Platform Fee (18%):</span>
+                    <span>${formatCurrency(tax)}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <strong>Total Amount:</strong>
+                    <strong class="text-success">${formatCurrency(totalAmount)}</strong>
+                </div>
+            `;
+            
+            // Update payment amount display
+            document.getElementById('paymentAmount').textContent = formatCurrency(totalAmount);
+            
+            // Update button text
+            document.getElementById('payNowBtn').innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>Confirm Payment
+            `;
+        }
+        
+        function copyUpiId() {
+            const upiId = document.getElementById('upiIdDisplay').textContent;
+            navigator.clipboard.writeText(upiId).then(() => {
+                showToast('UPI ID copied to clipboard!', 'success');
+            }).catch(() => {
+                showToast('Failed to copy UPI ID', 'error');
+            });
+        }
+        
+        function openUpiApp(app) {
+            const upiId = '821827473@ybl';
+            const amount = totalAmount.toFixed(2);
+            const name = 'Bookwell';
+            const note = `Payment for ${billingData.book.title}`;
+            
+            let upiUrl = '';
+            
+            switch(app) {
+                case 'gpay':
+                    upiUrl = `gpay://upi/pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+                    break;
+                case 'phonepe':
+                    upiUrl = `phonepe://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+                    break;
+                case 'paytm':
+                    upiUrl = `paytmmp://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+                    break;
+                default:
+                    upiUrl = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+            }
+            
+            // Try to open UPI app
+            window.location.href = upiUrl;
+            
+            // Show message
+            setTimeout(() => {
+                showToast('After payment, enter Transaction ID below', 'info');
+            }, 1000);
+        }
+        
+        async function processPayment() {
+            // Validate transaction ID
+            const transactionId = document.getElementById('transactionId').value.trim();
+            
+            if (!transactionId) {
+                showToast('Please enter Transaction ID / UTR Number', 'error');
+                return;
+            }
+            
+            if (transactionId.length < 10) {
+                showToast('Please enter a valid Transaction ID (minimum 10 characters)', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            // Process payment
+            setTimeout(async () => {
+                try {
+                    // Create order in Firebase with transaction ID
+                    const orderId = await createOrder({
+                        fullName: billingData.fullName,
+                        phone: billingData.phone,
+                        bookId: billingData.book.id,
+                        bookTitle: billingData.book.title,
+                        amount: totalAmount,
+                        paymentId: transactionId,  // Use transaction ID as payment ID
+                        transactionId: transactionId,
+                        paymentMethod: 'UPI',
+                        upiId: '821827473@ybl'
+                    });
+                    
+                    if (orderId) {
+                        // Clear localStorage
+                        localStorage.removeItem('checkoutBook');
+                        localStorage.removeItem('billingData');
+                        
+                        hideLoading();
+                        
+                        // Show success message
+                        showToast('Order placed successfully! Awaiting admin approval.', 'success');
+                        
+                        // Redirect to success page
+                        setTimeout(() => {
+                            window.location.href = `order-success.html?orderId=${orderId}&paymentId=${transactionId}`;
+                        }, 1500);
+                    } else {
+                        hideLoading();
+                        showToast('Payment failed. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    hideLoading();
+                    console.error('Payment error:', error);
+                    showToast('Payment processing failed: ' + error.message, 'error');
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="brand-text">Bookwell</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="new-releases.html">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="best-sellers.html">Best Sellers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offers.html">Offers</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link text-dark me-3" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="favourites.html" class="btn btn-link text-dark me-3 position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger" id="favCount">0</span>
+                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <button class="btn btn-link text-dark dropdown-toggle" type="button" data-mdb-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                            <li><a class="dropdown-item" href="library.html">My Library</a></li>
+                            <li><a class="dropdown-item" href="orders.html">Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn" onclick="if(confirm('Are you sure you want to logout?')) { logout(); } return false;">Logout</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-primary btn-rounded ms-2" id="authBtn" onclick="window.location.href='login.html'">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <section class="py-5 mt-5">
+        <div class="container">
+            <button class="btn btn-link text-dark mb-4" onclick="history.back()">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
+            
+            <div class="row" id="productDetail">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h3 class="mb-4">Customer Reviews</h3>
+            
+            <!-- Add Review Form -->
+            <div class="card mb-4" id="reviewFormCard" style="display: none;">
+                <div class="card-body">
+                    <h5>Write a Review</h5>
+                    <form id="reviewForm">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="rating-input">
+                                <i class="far fa-star" data-rating="1"></i>
+                                <i class="far fa-star" data-rating="2"></i>
+                                <i class="far fa-star" data-rating="3"></i>
+                                <i class="far fa-star" data-rating="4"></i>
+                                <i class="far fa-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="ratingValue" value="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Your Review</label>
+                            <textarea class="form-control" id="reviewComment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-rounded">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Reviews List -->
+            <div id="reviewsList">
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Brand Section -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-book-open me-2"></i>Bookwell
+                    </h5>
+                    <p class="text-muted">Your trusted platform for affordable eBooks. Learn, grow, and succeed with us.</p>
+                    <div class="social-links mt-3">
+                        <a href="https://www.instagram.com/bookwellofficial/" target="_blank" rel="noopener noreferrer" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.facebook.com/bookwellofficial/" target="_blank" rel="noopener noreferrer" title="Like us on Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6 col-6 mb-4">
+                    <h6 class="mb-3">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="categories.html">Categories</a></li>
+                        <li><a href="best-sellers.html">Best Sellers</a></li>
+                        <li><a href="offers.html">Offers</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div class="col-lg-2 col-md-6 col-6 mb-4">
+                    <h6 class="mb-3">Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h6 class="mb-3">Newsletter</h6>
+                    <p class="text-muted small">Subscribe to get updates on new releases and offers.</p>
+                    <div class="input-group input-group-sm">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Email">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0 text-muted small">© 2024 Bookwell. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="categories.html" class="nav-item"><i class="fas fa-th-large"></i><span>Categories</span></a>
+        <a href="favourites.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let currentBook = null;
+        let selectedRating = 0;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('id');
+            
+            if (!bookId) {
+                window.location.href = 'categories.html';
+                return;
+            }
+            
+            await loadProductDetail(bookId);
+            await loadReviewsForBook(bookId);
+            setupRatingInput();
+            setupReviewForm(bookId);
+        });
+        
+        async function loadProductDetail(bookId) {
+            const container = document.getElementById('productDetail');
+            try {
+                const bookDoc = await db.collection('ebooks').doc(bookId).get();
+                if (!bookDoc.exists) {
+                    container.innerHTML = '<div class="col-12 text-center"><p class="text-danger">Book not found</p></div>';
+                    return;
+                }
+                
+                currentBook = { id: bookDoc.id, ...bookDoc.data() };
+                
+                // Check if user owns this book
+                const user = auth.currentUser;
+                let ownsBook = false;
+                if (user) {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    const library = userDoc.data()?.library || [];
+                    ownsBook = library.includes(bookId);
+                }
+                
+                container.innerHTML = `
+                    <div class="col-lg-5">
+                        <img src="${currentBook.imageUrl || 'https://via.placeholder.com/400x600?text=Book+Cover'}" 
+                             alt="${currentBook.title}" 
+                             class="img-fluid rounded shadow"
+                             style="max-height: 600px; object-fit: cover;">
+                    </div>
+                    <div class="col-lg-7">
+                        <h1 class="mb-3">${currentBook.title}</h1>
+                        <p class="text-muted mb-3">by ${currentBook.author || 'Unknown Author'}</p>
+                        
+                        <div class="mb-3">
+                            <span class="book-rating">
+                                ${generateStars(currentBook.rating || 0)}
+                                <span class="ms-2">${currentBook.rating || 0} / 5</span>
+                            </span>
+                        </div>
+                        
+                        <h2 class="text-success mb-4">${formatCurrency(currentBook.price)}</h2>
+                        
+                        <div class="mb-4">
+                            <h5>Description</h5>
+                            <p>${currentBook.description || 'No description available.'}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p><strong>Category:</strong> <span class="badge bg-primary">${currentBook.category || 'General'}</span></p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">Available</span></p>
+                        </div>
+                        
+                        ${ownsBook ? `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>You already own this book!
+                            </div>
+                            <button class="btn btn-primary btn-lg btn-rounded" onclick="window.location.href='library.html'">
+                                <i class="fas fa-book me-2"></i>Go to My Library
+                            </button>
+                        ` : `
+                            <div class="d-flex gap-3">
+                                <button class="btn btn-primary btn-lg btn-rounded flex-grow-1" onclick="proceedToCheckout()">
+                                    <i class="fas fa-shopping-cart me-2"></i>Buy Now
+                                </button>
+                                <button class="btn btn-outline-primary btn-lg btn-rounded" id="favouriteBtn">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                if (!ownsBook) {
+                    setupFavouriteButton(bookId);
+                }
+                
+                // Show review form if user is logged in
+                if (user) {
+                    document.getElementById('reviewFormCard').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+                container.innerHTML = '<div class="col-12 text-center"><p class="text-danger">Failed to load product</p></div>';
+            }
+        }
+        
+        async function setupFavouriteButton(bookId) {
+            const btn = document.getElementById('favouriteBtn');
+            if (!btn) return;
+            
+            const user = auth.currentUser;
+            if (!user) {
+                btn.addEventListener('click', () => {
+                    showToast('Please login to add favourites', 'error');
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                });
+                return;
+            }
+            
+            const isFav = await isInFavourites(bookId);
+            if (isFav) {
+                btn.innerHTML = '<i class="fas fa-heart"></i>';
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-outline-primary');
+            }
+            
+            btn.addEventListener('click', async () => {
+                const isCurrentlyFav = btn.classList.contains('btn-primary');
+                if (isCurrentlyFav) {
+                    await removeFromFavourites(bookId);
+                    btn.innerHTML = '<i class="far fa-heart"></i>';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                } else {
+                    await addToFavourites(bookId);
+                    btn.innerHTML = '<i class="fas fa-heart"></i>';
+                    btn.classList.add('btn-primary');
+                    btn.classList.remove('btn-outline-primary');
+                }
+                updateFavouritesCount();
+            });
+        }
+        
+        function proceedToCheckout() {
+            if (!currentBook) return;
+            localStorage.setItem('checkoutBook', JSON.stringify(currentBook));
+            window.location.href = 'billing.html';
+        }
+        
+        async function loadReviewsForBook(bookId) {
+            const container = document.getElementById('reviewsList');
+            try {
+                const reviewsSnapshot = await db.collection('reviews')
+                    .where('bookId', '==', bookId)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                if (reviewsSnapshot.empty) {
+                    container.innerHTML = '<p class="text-muted">No reviews yet. Be the first to review!</p>';
+                    return;
+                }
+                
+                const reviews = reviewsSnapshot.docs.map(doc => doc.data());
+                container.innerHTML = reviews.map(review => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">${review.userName || 'Anonymous'}</h6>
+                                    <div class="book-rating">
+                                        ${generateStars(review.rating)}
+                                    </div>
+                                </div>
+                                <small class="text-muted">${formatDate(review.createdAt)}</small>
+                            </div>
+                            <p class="mb-0">${review.comment}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+        
+        function setupRatingInput() {
+            const stars = document.querySelectorAll('.rating-input i');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    selectedRating = parseInt(star.dataset.rating);
+                    document.getElementById('ratingValue').value = selectedRating;
+                    updateStarDisplay(selectedRating);
+                });
+                
+                star.addEventListener('mouseenter', () => {
+                    updateStarDisplay(parseInt(star.dataset.rating));
+                });
+            });
+            
+            document.querySelector('.rating-input').addEventListener('mouseleave', () => {
+                updateStarDisplay(selectedRating);
+            });
+        }
+        
+        function updateStarDisplay(rating) {
+            const stars = document.querySelectorAll('.rating-input i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star text-warning';
+                } else {
+                    star.className = 'far fa-star';
+                }
+            });
+        }
+        
+        function setupReviewForm(bookId) {
+            const form = document.getElementById('reviewForm');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (selectedRating === 0) {
+                    showToast('Please select a rating', 'error');
+                    return;
+                }
+                
+                const comment = document.getElementById('reviewComment').value;
+                const success = await submitReview(bookId, selectedRating, comment);
+                
+                if (success) {
+                    form.reset();
+                    selectedRating = 0;
+                    updateStarDisplay(0);
+                    await loadReviewsForBook(bookId);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+╔══════════════════════════════════════════════════════════════╗
+║      APPROVE & REJECT BUTTONS - ADMIN ORDERS ✅              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 NEW FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Approve Button (Green) - Manually approve orders
+✅ Reject Button (Red) - Manually reject orders
+✅ Admin-only access with security checks
+✅ Confirmation dialogs before action
+✅ Status badges after action
+
+
+📊 ACTIONS COLUMN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pending Orders:
+┌─────────────────────────────────────┐
+│ Actions                             │
+├─────────────────────────────────────┤
+│ [✓ Approve] [✖ Reject]              │
+│  (Green)     (Red)                  │
+└─────────────────────────────────────┘
+
+Approved Orders:
+┌─────────────────────────────────────┐
+│ Actions                             │
+├─────────────────────────────────────┤
+│ ✓ Approved                          │
+│ (Green Badge)                       │
+└─────────────────────────────────────┘
+
+Rejected Orders:
+┌─────────────────────────────────────┐
+│ Actions                             │
+├─────────────────────────────────────┤
+│ ✖ Rejected                          │
+│ (Red Badge)                         │
+└─────────────────────────────────────┘
+
+
+🔄 ADMIN PANEL TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pending Order:
+┌────────┬──────┬──────────┬────────┬──────────┬─────────┬──────────┬─────────────────┐
+│Order ID│ User │Book Title│ Amount │Trans ID  │Payment  │   Date   │     Actions     │
+├────────┼──────┼──────────┼────────┼──────────┼─────────┼──────────┼─────────────────┤
+│2kxTjqI │ king │Rich Dad  │ ₹51.92 │T220418...│ Paid ✅ │19 Oct 25 │[✓][✖]           │
+└────────┴──────┴──────────┴────────┴──────────┴─────────┴──────────┴─────────────────┘
+
+Approved Order:
+┌────────┬──────┬──────────┬────────┬──────────┬─────────┬──────────┬─────────────────┐
+│Order ID│ User │Book Title│ Amount │Trans ID  │Payment  │   Date   │     Actions     │
+├────────┼──────┼──────────┼────────┼──────────┼─────────┼──────────┼─────────────────┤
+│NQN4VD7 │ king │Think Big │ ₹51.92 │T79M418...│ Paid ✅ │19 Oct 25 │✓ Approved       │
+└────────┴──────┴──────────┴────────┴──────────┴─────────┴──────────┴─────────────────┘
+
+Rejected Order:
+┌────────┬──────┬──────────┬────────┬──────────┬─────────┬──────────┬─────────────────┐
+│Order ID│ User │Book Title│ Amount │Trans ID  │Payment  │   Date   │     Actions     │
+├────────┼──────┼──────────┼────────┼──────────┼─────────┼──────────┼─────────────────┤
+│ABC1234 │ john │Atomic    │ ₹45.00 │T123456...│ Paid ✅ │20 Oct 25 │✖ Rejected       │
+└────────┴──────┴──────────┴────────┴──────────┴─────────┴──────────┴─────────────────┘
+
+
+💻 CODE IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Action Buttons HTML:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Pending orders - Show both buttons
+const actionButtons = currentStatus === 'pending'
+    ? `<div class="d-flex gap-2 justify-content-center">
+           <button class="btn btn-success btn-sm" 
+                   onclick="approveOrder('${order.id}')" 
+                   title="Approve Order">
+               <i class="fas fa-check me-1"></i>Approve
+           </button>
+           <button class="btn btn-danger btn-sm" 
+                   onclick="rejectOrder('${order.id}')" 
+                   title="Reject Order">
+               <i class="fas fa-times me-1"></i>Reject
+           </button>
+       </div>`
+    
+    // Approved orders - Show badge
+    : currentStatus === 'approved'
+    ? `<span class="badge badge-success">
+           <i class="fas fa-check-circle me-1"></i>Approved
+       </span>`
+    
+    // Rejected orders - Show badge
+    : `<span class="badge badge-danger">
+           <i class="fas fa-times-circle me-1"></i>Rejected
+       </span>`;
+
+
+Approve Function:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function approveOrder(orderId) {
+    // Confirmation dialog
+    if (!confirm('Approve this order? User will get access to download the book.')) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        const user = auth.currentUser;
+        
+        // SECURITY: Verify admin status
+        if (!user || !isAdmin(user.email)) {
+            hideLoading();
+            showToast('Unauthorized: Only admins can approve orders', 'error');
+            return;
+        }
+        
+        // Get order details
+        const orderDoc = await db.collection('orders').doc(orderId).get();
+        if (!orderDoc.exists) {
+            hideLoading();
+            showToast('Order not found', 'error');
+            return;
+        }
+        
+        const orderData = orderDoc.data();
+        
+        // Update order status to approved
+        await db.collection('orders').doc(orderId).update({
+            status: 'approved',
+            approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            approvedBy: user.email
+        });
+        
+        // Create purchase record for user access
+        await db.collection('purchases').add({
+            userId: orderData.userId,
+            bookId: orderData.bookId,
+            orderId: orderId,
+            purchaseDate: firebase.firestore.FieldValue.serverTimestamp(),
+            approvedBy: user.email
+        });
+        
+        hideLoading();
+        showToast('Order approved! User can now download the book.', 'success');
+        await loadOrders(); // Reload orders
+    } catch (error) {
+        hideLoading();
+        console.error('Error approving order:', error);
+        
+        if (error.code === 'permission-denied') {
+            showToast('Permission denied: Only admins can approve orders', 'error');
+        } else {
+            showToast('Failed to approve order: ' + error.message, 'error');
+        }
+    }
+}
+
+
+Reject Function:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+async function rejectOrder(orderId) {
+    // Confirmation dialog
+    if (!confirm('Reject this order? User will NOT get access to download the book.')) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        const user = auth.currentUser;
+        
+        // SECURITY: Verify admin status
+        if (!user || !isAdmin(user.email)) {
+            hideLoading();
+            showToast('Unauthorized: Only admins can reject orders', 'error');
+            return;
+        }
+        
+        // Update order status to rejected
+        await db.collection('orders').doc(orderId).update({
+            status: 'rejected',
+            rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            rejectedBy: user.email
+        });
+        
+        hideLoading();
+        showToast('Order rejected successfully!', 'success');
+        await loadOrders(); // Reload orders
+    } catch (error) {
+        hideLoading();
+        console.error('Error rejecting order:', error);
+        
+        if (error.code === 'permission-denied') {
+            showToast('Permission denied: Only admins can reject orders', 'error');
+        } else {
+            showToast('Failed to reject order: ' + error.message, 'error');
+        }
+    }
+}
+
+
+📋 COMPLETE WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Approve Order Flow:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Admin Sees Pending Order
+┌─────────────────────────────────┐
+│ Admin Panel → Orders            │
+│                                 │
+│ Order: Rich Dad Poor Dad        │
+│ Payment: Paid ✅                │
+│ Actions: [✓ Approve] [✖ Reject] │
+└─────────────────────────────────┘
+
+Step 2: Admin Clicks Approve
+┌─────────────────────────────────┐
+│ Confirmation Dialog:            │
+│                                 │
+│ "Approve this order?            │
+│  User will get access to        │
+│  download the book."            │
+│                                 │
+│ [Cancel] [OK]                   │
+└─────────────────────────────────┘
+
+Step 3: Admin Confirms
+┌─────────────────────────────────┐
+│ Processing...                   │
+│ - Verify admin status           │
+│ - Get order details             │
+│ - Update status to 'approved'   │
+│ - Create purchase record        │
+│ - Save approval timestamp       │
+│ - Save admin email              │
+└─────────────────────────────────┘
+
+Step 4: Success
+┌─────────────────────────────────┐
+│ Success Message:                │
+│ "Order approved! User can now   │
+│  download the book."            │
+│                                 │
+│ Actions: ✓ Approved             │
+└─────────────────────────────────┘
+
+Step 5: User Gets Access
+┌─────────────────────────────────┐
+│ User Panel → Library            │
+│                                 │
+│ Book appears in library         │
+│ [Download Book] button enabled  │
+└─────────────────────────────────┘
+
+
+Reject Order Flow:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: Admin Sees Pending Order
+┌─────────────────────────────────┐
+│ Admin Panel → Orders            │
+│                                 │
+│ Order: Atomic Habits            │
+│ Payment: Paid ✅                │
+│ Actions: [✓ Approve] [✖ Reject] │
+└─────────────────────────────────┘
+
+Step 2: Admin Clicks Reject
+┌─────────────────────────────────┐
+│ Confirmation Dialog:            │
+│                                 │
+│ "Reject this order?             │
+│  User will NOT get access to    │
+│  download the book."            │
+│                                 │
+│ [Cancel] [OK]                   │
+└─────────────────────────────────┘
+
+Step 3: Admin Confirms
+┌─────────────────────────────────┐
+│ Processing...                   │
+│ - Verify admin status           │
+│ - Update status to 'rejected'   │
+│ - Save rejection timestamp      │
+│ - Save admin email              │
+└─────────────────────────────────┘
+
+Step 4: Success
+┌─────────────────────────────────┐
+│ Success Message:                │
+│ "Order rejected successfully!"  │
+│                                 │
+│ Actions: ✖ Rejected             │
+└─────────────────────────────────┘
+
+Step 5: User Sees Rejection
+┌─────────────────────────────────┐
+│ User Panel → Orders             │
+│                                 │
+│ Status: Rejected                │
+│ [Order Rejected] button         │
+│ No library access               │
+└─────────────────────────────────┘
+
+
+🔒 SECURITY FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Admin Verification:
+✅ Check if user is logged in
+✅ Verify admin email pattern
+✅ Block non-admin users
+✅ Show error message
+
+Confirmation Dialogs:
+✅ Approve: "User will get access"
+✅ Reject: "User will NOT get access"
+✅ User must confirm action
+✅ Can cancel anytime
+
+Error Handling:
+✅ Permission denied errors
+✅ Order not found errors
+✅ Network errors
+✅ User-friendly messages
+
+Audit Trail:
+✅ approvedAt timestamp
+✅ approvedBy admin email
+✅ rejectedAt timestamp
+✅ rejectedBy admin email
+
+
+🧪 TESTING GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test 1: Approve Order
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Login as admin
+2. Go to Orders page
+3. Find pending order
+4. Click "Approve" button (Green)
+5. Confirm dialog
+6. Check success message
+7. Verify Actions shows "✓ Approved"
+8. Check user library - book appears
+
+Expected: ✅ Order approved successfully
+
+
+Test 2: Reject Order
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Login as admin
+2. Go to Orders page
+3. Find pending order
+4. Click "Reject" button (Red)
+5. Confirm dialog
+6. Check success message
+7. Verify Actions shows "✖ Rejected"
+8. Check user library - book NOT appears
+
+Expected: ✅ Order rejected successfully
+
+
+Test 3: Cancel Action
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Click Approve or Reject
+2. Click "Cancel" in confirmation
+3. Order remains pending
+4. Buttons still visible
+
+Expected: ✅ Action cancelled
+
+
+Test 4: Non-Admin Access
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Login as regular user
+2. Try to access admin panel
+3. Should be blocked
+
+Expected: ✅ Access denied
+
+
+✅ SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Feature: Approve & Reject Buttons
+File: admin/orders.html
+Location: Actions Column
+
+New Buttons:
+✅ Approve (Green) - Grants access
+✅ Reject (Red) - Denies access
+
+Features:
+✅ Manual approval/rejection
+✅ Confirmation dialogs
+✅ Admin-only access
+✅ Security checks
+✅ Audit trail
+✅ Status badges
+✅ Error handling
+
+Workflow:
+Pending → [Approve] → Approved → User gets access
+Pending → [Reject] → Rejected → User denied access
+
+PERFECT! 🎉

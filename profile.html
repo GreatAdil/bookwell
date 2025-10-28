@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Bookwell</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="logo-icon me-2">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="brand-text">Bookwell</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="new-releases.html">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="best-sellers.html">Best Sellers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="offers.html">Offers</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link text-dark me-3" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="favourites.html" class="btn btn-link text-dark me-3 position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge rounded-pill badge-notification bg-danger" id="favCount">0</span>
+                    </a>
+                    <div class="dropdown" id="userDropdown">
+                        <button class="btn btn-link text-dark dropdown-toggle" type="button" data-mdb-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.html">My Profile</a></li>
+                            <li><a class="dropdown-item" href="library.html">My Library</a></li>
+                            <li><a class="dropdown-item" href="orders.html">Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn" onclick="if(confirm('Are you sure you want to logout?')) { logout(); } return false;">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="profile-header mt-5">
+        <img src="https://ui-avatars.com/api/?name=User&size=120&background=9AF5B5&color=333" 
+             alt="Profile" 
+             class="profile-avatar" 
+             id="profileAvatar">
+        <h2 class="profile-name" id="profileName">Loading...</h2>
+        <p class="profile-email" id="profileEmail">Loading...</p>
+        <button class="btn btn-light btn-rounded mt-3" data-mdb-toggle="modal" data-mdb-target="#editProfileModal">
+            <i class="fas fa-edit me-2"></i>Edit Profile
+        </button>
+    </div>
+
+    <!-- Profile Menu -->
+    <div class="profile-menu">
+        <a href="library.html" class="profile-menu-item">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-book"></i>
+                <span>My Library</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="favourites.html" class="profile-menu-item">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-heart"></i>
+                <span>Favourites</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="orders.html" class="profile-menu-item">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-receipt"></i>
+                <span>Order History</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="contact.html" class="profile-menu-item">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-headset"></i>
+                <span>Help & Support</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        
+        <a href="#" class="profile-menu-item" onclick="if(confirm('Are you sure you want to logout?')) logout(); return false;">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-control" id="editName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-rounded w-100">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3"><i class="fas fa-book-open me-2"></i>Bookwell</h5>
+                    <p>Your trusted platform for affordable eBooks.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/bookwellofficial/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/bookwellofficial/" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="categories.html">Categories</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0">© 2024 Bookwell. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="categories.html" class="nav-item"><i class="fas fa-th-large"></i><span>Categories</span></a>
+        <a href="favourites.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let currentUser = null;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await requireAuth();
+            if (!currentUser) return;
+            
+            loadProfile();
+            setupEditForm();
+        });
+        
+        function loadProfile() {
+            const name = currentUser.displayName || currentUser.email.split('@')[0];
+            const email = currentUser.email;
+            
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileEmail').textContent = email;
+            document.getElementById('profileAvatar').src = 
+                currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=120&background=9AF5B5&color=333`;
+            
+            // Pre-fill edit form
+            document.getElementById('editName').value = name;
+            document.getElementById('editEmail').value = email;
+        }
+        
+        function setupEditForm() {
+            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const newName = document.getElementById('editName').value;
+                const success = await updateUserProfile(newName, currentUser.photoURL);
+                
+                if (success) {
+                    const modal = mdb.Modal.getInstance(document.getElementById('editProfileModal'));
+                    modal.hide();
+                    
+                    // Reload profile
+                    currentUser = auth.currentUser;
+                    loadProfile();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
